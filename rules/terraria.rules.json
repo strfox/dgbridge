@@ -1,0 +1,22 @@
+{
+  "DiscordToSubprocess": [
+    {
+      "Match": ".*",
+      "Template": "say <^U> $0"
+    }
+  ],
+  "SubprocessToDiscord": [
+    {
+      "Match": "^<(.+)>(.*)$",
+      "Template": "**<${1}>** ${2}"
+    },
+    {
+      "Match": "^(.+) has joined.$",
+      "Template": ":arrow_left: **${1}** connected."
+    },
+    {
+      "Match": "^(.+) has left.$",
+      "Template": ":arrow_right: **${1}** disconnected."
+    }
+  ]
+}
