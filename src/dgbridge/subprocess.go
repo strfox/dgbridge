@@ -194,7 +194,6 @@ func (ctx *SubprocessCtx) relaySignalsToSubprocessUntilExit() {
 	for {
 		select {
 		case sig := <-sigCh:
-			log.Println("[debug] Received signal:", sig)
 			// We received a signal, let's try passing it to the subprocess
 			if err := ctx.cmd.Process.Signal(sig); err != nil {
 				// Not clear how we can hit this, but probably not
