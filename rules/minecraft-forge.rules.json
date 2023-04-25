@@ -1,0 +1,22 @@
+{
+  "DiscordToSubprocess": [
+    {
+      "Match": ".*",
+      "Template": "say <^U> $0"
+    }
+  ],
+  "SubprocessToDiscord": [
+    {
+      "Match": ".*\\[.*INFO](?: \\[.*])?:? <(.+)> (.+)",
+      "Template": "**<${1}>** ${2}"
+    },
+    {
+      "Match": ".*\\[.*INFO](?: \\[.*])?:? (.+)\\[.+] logged in with entity id.*",
+      "Template": ":arrow_left: **${1}** connected."
+    },
+    {
+      "Match": ".*\\[.*INFO](?: \\[.*])?:? (.+) lost connection.*",
+      "Template": ":arrow_right: **${1}** disconnected."
+    }
+  ]
+}
