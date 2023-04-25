@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/bwmarrin/discordgo"
 	"os"
+	"strconv"
 )
 
 type Rules struct {
@@ -90,6 +91,10 @@ func (ctx *TemplateContext) buildTemplate(template string) string {
 				continue
 			case 'T':
 				result = append(result, []rune(ctx.message.Author.Discriminator)...)
+				i++
+				continue
+			case 'C':
+				result = append(result, []rune(strconv.FormatInt(int64(ctx.message.Author.AccentColor), 16))...)
 				i++
 				continue
 			}

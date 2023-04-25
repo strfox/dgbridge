@@ -10,6 +10,7 @@ func TestBuildTemplate(t *testing.T) {
 	bobUser := &discordgo.User{
 		Username:      "Bob^T",
 		Discriminator: "1337",
+		AccentColor:   0xFFFF00,
 	}
 	bobMember := &discordgo.Member{
 		Nick: "bobby",
@@ -21,7 +22,7 @@ func TestBuildTemplate(t *testing.T) {
 		expect string
 	}{
 		{
-			name: "Basic",
+			name: "All parameters",
 			ctx: TemplateContext{
 				session: nil,
 				message: &discordgo.Message{
@@ -29,8 +30,8 @@ func TestBuildTemplate(t *testing.T) {
 					Author: bobUser,
 				},
 			},
-			input:  "<^U#^T> ${1} ^^ ^A",
-			expect: "<Bob^T#1337> ${1} ^ ^A",
+			input:  "<^U#^T> ${1} ^^ ^A ^C",
+			expect: "<Bob^T#1337> ${1} ^ ^A ffff00",
 		},
 	}
 	for _, test := range tests {
