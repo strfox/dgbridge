@@ -1,6 +1,13 @@
 <!-- omit from toc -->
 # Table of Contents
 
+- [Compatible Game Servers](#compatible-game-servers)
+  - [Confirmed Supported:](#confirmed-supported)
+  - [Confirmed Unsupported:](#confirmed-unsupported)
+  - [Supported Operating Systems](#supported-operating-systems)
+    - [Officially Supported:](#officially-supported)
+    - [Untested but supported:](#untested-but-supported)
+    - [Unsupported:](#unsupported)
 - [What is dgbridge?](#what-is-dgbridge)
 - [Basic Usage](#basic-usage)
 - [Examples](#examples)
@@ -27,13 +34,22 @@
   - Tiny source code
   - MIT-licensed
 
-## Tested game servers:
+# Compatible Game Servers
+
+  **If there are any game servers you have tested that is not listed here, please let me know how your setup went so that we can expand this list.**
+
+## Confirmed Supported:
 
   - Minecraft Alpha 1.1.2_01
   - Minecraft Beta 1.3_01
   - Minecraft Release 1.19.3
   - Minecraft Forge 1.19
   - Terraria
+
+## Confirmed Unsupported:
+
+  - Minecraft Bedrock
+    - Reason: Server does not print player messages to console and does not provide such feature
 
 ## Supported Operating Systems
 
