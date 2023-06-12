@@ -105,7 +105,7 @@ for how to make and use a configuration file.
 
     dgbridge --token TOKEN \
              --channel_id CHANNEL_ID \
-             --rules ./rules/minecraft.rules.json \
+             --rules ./rules/terraria.rules.json \
              "./TerrariaServer -config config.ini"
 
 # Rules
