@@ -22,7 +22,7 @@ func main() {
 		log.Fatalf("error loading rules: %v", err)
 	}
 
-	subprocess := CreateSubprocess(args.Command)
+	subprocess := NewSubprocess(args.Command)
 
 	go relaySubprocessStdout(&subprocess)
 	go relaySubprocessStderr(&subprocess)
@@ -59,9 +59,8 @@ func main() {
 	select {}
 }
 
-// relayStdinToSubprocessStdin continuously relays os.Stdin to the subprocess'
-// stdin.
-func relayStdinToSubprocessStdin(ctx *SubprocessCtx) {
+// relayStdinToSubprocessStdin continuously relays os.Stdin to the subprocess' stdin.
+func relayStdinToSubprocessStdin(ctx *SubprocessContext) {
 	// Relay os.Stdin to the subprocess' stdin.
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
@@ -71,9 +70,8 @@ func relayStdinToSubprocessStdin(ctx *SubprocessCtx) {
 	}
 }
 
-// relaySubprocessStdout continuously relays the subprocess' stdout
-// to os.Stdout.
-func relaySubprocessStdout(ctx *SubprocessCtx) {
+// relaySubprocessStdout continuously relays the subprocess' stdout to os.Stdout.
+func relaySubprocessStdout(ctx *SubprocessContext) {
 	lineCh := ctx.StdoutLineEvent.Listen()
 	defer ctx.StdoutLineEvent.Off(lineCh)
 	for line := range lineCh {
@@ -81,9 +79,8 @@ func relaySubprocessStdout(ctx *SubprocessCtx) {
 	}
 }
 
-// relaySubprocessStderr continuously relays the subprocess' stderr
-// to os.Stderr.
-func relaySubprocessStderr(ctx *SubprocessCtx) {
+// relaySubprocessStderr continuously relays the subprocess' stderr to os.Stderr.
+func relaySubprocessStderr(ctx *SubprocessContext) {
 	lineCh := ctx.StderrLineEvent.Listen()
 	defer ctx.StderrLineEvent.Off(lineCh)
 	for line := range lineCh {

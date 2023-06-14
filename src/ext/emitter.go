@@ -2,13 +2,13 @@ package ext
 
 import "sync"
 
-type Event[T any] struct {
+type EventChannel[T any] struct {
 	mutex    sync.Mutex
 	channels []chan T
 }
 
-// Broadcast broadcasts an item to all channels on an Event.
-func (em *Event[T]) Broadcast(item T) {
+// Broadcast broadcasts an item to all channels on an EventChannel.
+func (em *EventChannel[T]) Broadcast(item T) {
 	em.mutex.Lock()
 	defer em.mutex.Unlock()
 
@@ -17,9 +17,9 @@ func (em *Event[T]) Broadcast(item T) {
 	}
 }
 
-// Listen creates a new receive-only channel for an Event. The created channel
+// Listen creates a new receive-only channel for an EventChannel. The created channel
 // will receive broadcast events.
-func (em *Event[T]) Listen() <-chan T {
+func (em *EventChannel[T]) Listen() <-chan T {
 	em.mutex.Lock()
 	defer em.mutex.Unlock()
 
@@ -28,8 +28,8 @@ func (em *Event[T]) Listen() <-chan T {
 	return channel
 }
 
-// Off removes the specified channel from an Event.
-func (em *Event[T]) Off(c <-chan T) {
+// Off removes the specified channel from an EventChannel.
+func (em *EventChannel[T]) Off(c <-chan T) {
 	em.mutex.Lock()
 	defer em.mutex.Unlock()
 

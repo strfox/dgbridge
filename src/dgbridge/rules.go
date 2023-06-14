@@ -3,52 +3,51 @@ package main
 import (
 	"dgbridge/src/ext"
 	"encoding/json"
-	"github.com/bwmarrin/discordgo"
 	"os"
 	"strconv"
 )
 
-type Rules struct {
-	DiscordToSubprocess []Rule `json:"DiscordToSubprocess"`
-	SubprocessToDiscord []Rule `json:"SubprocessToDiscord"`
-}
+type (
+	Rules struct {
+		DiscordToSubprocess []Rule `json:"DiscordToSubprocess"`
+		SubprocessToDiscord []Rule `json:"SubprocessToDiscord"`
+	}
+	Rule struct {
+		Match    ext.Regexp `json:"Match"`
+		Template string     `json:"Template"`
+	}
+)
 
-type Rule struct {
-	Match    ext.Regexp `json:"Match"`
-	Template string     `json:"Template"`
-}
+type (
+	Props struct {
+		Author Author
+	}
+	Author struct {
+		Username      string
+		Discriminator string
+		AccentColor   int
+	}
+)
 
-// LoadRules loads a set of rules from a file.
-//
-// Parameters:
-//
-//	path: Path of the file to load
-//
-// Returns:
-//
-//	If an error occurs while reading the file, it returns nil an error.
-//	Otherwise, it returns a pointer to the Rules struct and a nil
+// LoadRules loads a set of rules from a JSON file.
 func LoadRules(path string) (*Rules, error) {
 	fileContents, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	var payload Rules
-	err = json.Unmarshal(fileContents, &payload)
+	var rules Rules
+	err = json.Unmarshal(fileContents, &rules)
 	if err != nil {
 		return nil, err
 	}
-	return &payload, err
+	return &rules, err
 }
 
-// ApplyRules applies a set of rules to a given input string.
-// Each rule is applied to the input string using the Apply method of the Rule
-// struct. If the Apply method returns a non-empty string, the function returns
-// that string. If none of the rules return a non-empty string, the function
-// returns an empty string.
-func ApplyRules(rules []Rule, in string, ctx *TemplateContext) string {
+// ApplyRules applies rules to a string.
+// If props are provided, a matching template will be built using those props.
+func ApplyRules(rules []Rule, props *Props, input string) string {
 	for _, rule := range rules {
-		result := rule.Apply(in, ctx)
+		result := ApplyRule(rule, props, input)
 		if result != "" {
 			return result
 		}
@@ -56,29 +55,34 @@ func ApplyRules(rules []Rule, in string, ctx *TemplateContext) string {
 	return ""
 }
 
-// Apply applies a rule to a given input string.
-// It checks if the input string matches the rule's Match regular expression.
-// If there is a match, it replaces the match with the Template string and
-// returns the modified input string. If there is no match, it returns an empty
-// string.
-func (r *Rule) Apply(in string, ctx *TemplateContext) string {
-	if r.Match.MatchString(in) {
-		return r.Match.ReplaceAllString(in, ctx.buildTemplate(r.Template))
+// ApplyRule applies a rule to a given input string if it matches.
+//
+// Parameters:
+// props: If passed, the Rule's template is built with the given Props.
+func ApplyRule(rule Rule, props *Props, input string) string {
+	if rule.Match.MatchString(input) {
+		if props == nil {
+			return rule.Match.ReplaceAllString(input, rule.Template)
+		}
+		return rule.Match.ReplaceAllString(input, buildTemplate(rule.Template, *props))
 	}
 	return ""
 }
 
-type TemplateContext struct {
-	session *discordgo.Session
-	message *discordgo.Message
-}
-
-func (ctx *TemplateContext) buildTemplate(template string) string {
+// Builds a rule template for Discord -> Process communication.
+// It replaces all special combinations in the template with their corresponding properties.
+//
+// Example:
+//   - ^U turns into Username
+//   - ^T turns into Discriminator
+//
+// Returns template with Props applied.
+func buildTemplate(template string, props Props) string {
 	var result []rune
 	runes := []rune(template)
 	for i := 0; i < len(runes); i++ {
-		iRune := runes[i]
-		if iRune == '^' && i+1 < len(template) {
+		currentRune := runes[i]
+		if currentRune == '^' && i+1 < len(template) {
 			switch template[i+1] {
 			case '^':
 				// This is an escaped ^
@@ -86,20 +90,20 @@ func (ctx *TemplateContext) buildTemplate(template string) string {
 				i++
 				continue
 			case 'U':
-				result = append(result, []rune(ctx.message.Author.Username)...)
+				result = append(result, []rune(props.Author.Username)...)
 				i++
 				continue
 			case 'T':
-				result = append(result, []rune(ctx.message.Author.Discriminator)...)
+				result = append(result, []rune(props.Author.Discriminator)...)
 				i++
 				continue
 			case 'C':
-				result = append(result, []rune(strconv.FormatInt(int64(ctx.message.Author.AccentColor), 16))...)
+				result = append(result, []rune(strconv.FormatInt(int64(props.Author.AccentColor), 16))...)
 				i++
 				continue
 			}
 		}
-		result = append(result, iRune)
+		result = append(result, currentRune)
 	}
 	return string(result)
 }
