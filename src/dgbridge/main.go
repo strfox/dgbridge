@@ -17,7 +17,7 @@ type CliArgs struct {
 }
 
 func main() {
-	fmt.Printf("Dgbridge (v%v)\n", lib.Version)
+	fmt.Printf("Dgbridge (%v)\n", lib.Version)
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
 	var args CliArgs
