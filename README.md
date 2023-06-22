@@ -16,6 +16,7 @@
 - [Rules](#rules)
   - [Rules Example: Process ➡️ Discord](#rules-example-process-️-discord)
   - [Rules Example: Discord ➡️ Process](#rules-example-discord-️-process)
+- [Automated Rule Testing](#automated-rule-testing)
 - [Questions](#questions)
   - [1. How does this differ from a Discord bridge like DiscordSRV?](#1-how-does-this-differ-from-a-discord-bridge-like-discordsrv)
   - [2. Is this supported on the platform I'm using (e.g.: Pterodactyl Panel)?](#2-is-this-supported-on-the-platform-im-using-eg-pterodactyl-panel)
@@ -33,6 +34,7 @@
   - Open-source
   - Tiny source code
   - MIT-licensed
+  - Automated testing tool included
 
 # Compatible Game Servers
 
@@ -171,6 +173,39 @@ Discord message.
 
 The program comes with pre-made rules for Minecraft and Terraria servers, so
 you can look at them for some more examples.
+
+# Automated Rule Testing
+
+You can automate rule testing with the Dgbridge Testing Tool. The ruletester program accepts a rules file and a test case file. It checks that all regex rules are applied in the way you expect them to.
+
+Example usage:
+
+```
+./ruletester --rules ../rules/minecraft.rules.json --test ../tests/test.minecraft.rules.json
+Dgbridge Rule Tester (v1.0.1)
+-------------------------------------------
+SubprocessToDiscord tests: Running 8 tests
+-------------------------------------------
+✅  Test #0: PASS
+✅  Test #1: PASS
+✅  Test #2: PASS
+✅  Test #3: PASS
+❌  SubprocessToDiscordTest Test #4: FAIL:
+        Input:          [26Apr2023 05:52:38.452] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Bob left the game
+        Expected:       :arrow_left: **Bob** left.
+        Got:            :arrow_left: **Bob** disconnected.
+✅  Test #5: PASS
+✅  Test #6: PASS
+✅  Test #7: PASS
+-------------------------------------------
+DiscordToSubprocess tests: Running 2 tests
+-------------------------------------------
+✅  Test #0: PASS
+✅  Test #1: PASS
+Finished: Tests passed: 9, failed: 1
+```
+
+See the `tests/test.minecraft.rules.json` for an example of a test case.
 
 # Questions
 
