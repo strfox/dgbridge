@@ -1,4 +1,4 @@
-package main
+package lib
 
 import (
 	"dgbridge/src/ext"
@@ -9,23 +9,23 @@ import (
 
 type (
 	Rules struct {
-		DiscordToSubprocess []Rule `json:"DiscordToSubprocess"`
-		SubprocessToDiscord []Rule `json:"SubprocessToDiscord"`
+		DiscordToSubprocess []Rule `validate:"required"`
+		SubprocessToDiscord []Rule `validate:"required"`
 	}
 	Rule struct {
-		Match    ext.Regexp `json:"Match"`
-		Template string     `json:"Template"`
+		Match    ext.Regexp `validate:"required"`
+		Template string     `validate:"required"`
 	}
 )
 
 type (
 	Props struct {
-		Author Author
+		Author Author `validate:"required"`
 	}
 	Author struct {
-		Username      string
-		Discriminator string
-		AccentColor   int
+		Username      string `validate:"required"`
+		Discriminator string `validate:"required"`
+		AccentColor   int    `validate:"required"`
 	}
 )
 

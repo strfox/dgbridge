@@ -2,24 +2,30 @@ package main
 
 import (
 	"bufio"
+	"dgbridge/src/lib"
+	"fmt"
 	"github.com/alexflint/go-arg"
 	"log"
 	"os"
 )
 
+type CliArgs struct {
+	Token     string `arg:"required,-t,--token" help:"Discord authentication token"`
+	ChannelId string `arg:"required,-i,--channel_id" help:"Discord channel ID"`
+	RulesFile string `arg:"required,-r,--rules" help:"Path to the file with translation rules"`
+	Command   string `arg:"required,positional"`
+}
+
 func main() {
+	fmt.Printf("Dgbridge (v%v)\n", lib.Version)
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	var args struct {
-		Token     string `arg:"required,-t,--token" help:"Discord authentication token"`
-		ChannelId string `arg:"required,-i,--channel_id" help:"Discord channel ID"`
-		RulesFile string `arg:"required,-r,--rules" help:"Path to the file containing the rules"`
-		Command   string `arg:"required,positional"`
-	}
+
+	var args CliArgs
 	arg.MustParse(&args)
 
-	rules, err := LoadRules(args.RulesFile)
+	rules, err := lib.LoadRules(args.RulesFile)
 	if err != nil {
-		log.Fatalf("error loading rules: %v", err)
+		log.Fatalf("error loading rules: %v\n", err)
 	}
 
 	subprocess := NewSubprocess(args.Command)

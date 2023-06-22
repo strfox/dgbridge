@@ -2,6 +2,7 @@ package main
 
 import (
 	"dgbridge/src/ext"
+	"dgbridge/src/lib"
 	"fmt"
 	"github.com/bwmarrin/discordgo"
 	"log"
@@ -13,13 +14,13 @@ type BotParameters struct {
 	Token          string             // Discord auth token
 	RelayChannelId string             // Saved in BotContext
 	Subprocess     *SubprocessContext // Saved in BotContext
-	Rules          Rules              // Saved in BotContext
+	Rules          lib.Rules          // Saved in BotContext
 }
 
 type BotContext struct {
 	relayChannelId string             // ID of destination Discord channel
 	subprocess     *SubprocessContext // Subprocess context
-	rules          Rules              // Message conversion rules
+	rules          lib.Rules          // Message conversion rules
 	readyOnce      sync.Once          // Tracks if bot was initialized
 }
 
@@ -80,7 +81,7 @@ func (self *BotContext) startRelayJob(session *discordgo.Session, event *ext.Eve
 	lineCh := event.Listen()
 	defer event.Off(lineCh)
 	for line := range lineCh {
-		line = ApplyRules(self.rules.SubprocessToDiscord, nil, line)
+		line = lib.ApplyRules(self.rules.SubprocessToDiscord, nil, line)
 		if line == "" {
 			// No rules matched.
 			continue
@@ -105,8 +106,8 @@ func (self *BotContext) messageCreate() func(s *discordgo.Session, m *discordgo.
 			return
 		}
 		msg := m.Content
-		msg = ApplyRules(self.rules.DiscordToSubprocess, &Props{
-			Author: Author{
+		msg = lib.ApplyRules(self.rules.DiscordToSubprocess, &lib.Props{
+			Author: lib.Author{
 				Username:      m.Author.Username,
 				Discriminator: m.Author.Discriminator,
 				AccentColor:   m.Author.AccentColor,

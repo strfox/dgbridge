@@ -1,0 +1,32 @@
+{
+  "tests": {
+    "dis2srv": {
+      "tests": [
+        {
+          "input": "hey bob",
+          "expect": "say <Mike> hey bob",
+          "userProps": "mike"
+        }
+      ]
+    },
+    "srv2dis": [
+      {
+        "input": "[12:01:01] [Server thread/INFO] <FennecBytes> hello world!",
+        "expect": "**<FennecBytes>** hello world!"
+      },
+      {
+        "input": "[00:00:00] [Server thread/INFO] <Bob> very cool things happening <here>!",
+        "expect": "**<Bob>** very cool things happening <here>!"
+      }
+    ]
+  },
+  "userProps": {
+    "mike": {
+      "author": {
+        "username": "Mike",
+        "discriminator": "3782",
+        "accentColor": 4473856
+      }
+    }
+  }
+}
