@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"os"
 	"strconv"
+	"strings"
 )
 
 type (
@@ -60,6 +61,9 @@ func ApplyRules(rules []Rule, props *Props, input string) string {
 // Parameters:
 // props: If passed, the Rule's template is built with the given Props.
 func ApplyRule(rule Rule, props *Props, input string) string {
+	// Remove newlines from input and replace them with spaces
+	input = strings.ReplaceAll(input, "\n", " ")
+
 	if rule.Match.MatchString(input) {
 		if props == nil {
 			return rule.Match.ReplaceAllString(input, rule.Template)

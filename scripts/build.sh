@@ -1,9 +1,5 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 OPTIND=1
-
-script_dir="$(dirname "$0")"
-src_dir="$script_dir/../src/dgbridge"
-
 all=0
 while getopts "a" opt; do
   case "$opt" in
@@ -18,8 +14,14 @@ done
 shift $((OPTIND-1))
 [ "${1:-}" = "--" ] && shift
 
-if [ $all -eq 1 ]; then
-  gox -os="!windows" -osarch="!darwin/386" "$src_dir"
-else
-  go build "$src_dir"
-fi
+script_dir="$(dirname "$0")"
+declare -a src_dirs=("$script_dir/../src/dgbridge" "$script_dir/../src/ruletester")
+
+for src_dir in "${src_dirs[@]}"
+do
+  if [ $all -eq 1 ]; then
+    gox -os="!windows" -osarch="!darwin/386" "$src_dir"
+  else
+    go build "$src_dir"
+  fi
+done

@@ -16,29 +16,6 @@ type CliArgs struct {
 	TestFile  string `arg:"required,-t,--test"  help:"Path to test file"`
 }
 
-type (
-	FileRoot struct {
-		Tests     RuleTest             `validate:"required"`
-		UserProps map[string]lib.Props `validate:"dive"`
-	}
-	RuleTest struct {
-		Dis2Srv Dis2SrvTestBlock  `validate:"required"`
-		Srv2Dis []Srv2DisTestCase `validate:"required,dive"`
-	}
-	Dis2SrvTestBlock struct {
-		Tests []Dis2SrvTestCase `validate:"required,dive"`
-	}
-	Dis2SrvTestCase struct {
-		Input     string `validate:"required"`
-		Expect    string `validate:"required"`
-		UserProps string `validate:"required"`
-	}
-	Srv2DisTestCase struct {
-		Input  string `validate:"required"`
-		Expect string `validate:"required"`
-	}
-)
-
 func main() {
 	fmt.Printf("Dgbridge Rule Tester (v%v)\n", lib.Version)
 
@@ -66,68 +43,9 @@ func main() {
 		printError("Failed to load test file: %v", err)
 		os.Exit(1)
 	}
-	tests := root.Tests
 
-	//
-	// Run test group
-	//
-	passedTests := 0
-	failedTests := 0
-
-	fmt.Printf(
-		"-------------------------------------------\n"+
-			"Srv2Dis tests: Running %v tests\n"+
-			"-------------------------------------------\n",
-		len(tests.Srv2Dis),
-	)
-	for i, test := range tests.Srv2Dis {
-		result := lib.ApplyRules(rules.SubprocessToDiscord, nil, test.Input)
-		if result != test.Expect {
-			fmt.Printf(
-				"❌  Srv2DisTestCase Test #%v: FAIL:\n"+
-					"\tInput:\t\t%v\n"+
-					"\tExpected:\t%v\n"+
-					"\tGot:\t\t%v\n",
-				i, test.Input, test.Expect, result,
-			)
-			failedTests += 1
-			continue
-		}
-		fmt.Printf("✅  Test #%v: PASS\n", i)
-		passedTests += 1
-	}
-
-	fmt.Printf(
-		"-------------------------------------------\n"+
-			"Dis2Srv tests: Running %v tests\n"+
-			"-------------------------------------------\n",
-		len(tests.Dis2Srv.Tests),
-	)
-	for i, test := range tests.Dis2Srv.Tests {
-		userProps, ok := root.UserProps[test.UserProps]
-		if !ok {
-			printError("❌  Test #%v: bad test: missing UserProps \"%v\".\n", i, test.UserProps)
-			failedTests += 1
-			continue
-		}
-
-		result := lib.ApplyRules(rules.DiscordToSubprocess, &userProps, test.Input)
-		if result != test.Expect {
-			fmt.Printf(
-				"❌  d2s Test #%v: FAIL:\n"+
-					"\tInput:\t\t%v\n"+
-					"\tExpected:\t%v\n"+
-					"\tGot:\t\t%v\n",
-				i, test.Input, test.Expect, result,
-			)
-			failedTests += 1
-			continue
-		}
-		passedTests += 1
-		fmt.Printf("✅  Test #%v: PASS\n", i)
-	}
-
-	fmt.Printf("Finished: Tests passed: %v, failed: %v\n", passedTests, failedTests)
+	testRunner := NewTestRunner(root, rules)
+	testRunner.RunTests()
 }
 
 func loadFileRoot(args CliArgs) (*FileRoot, error) {

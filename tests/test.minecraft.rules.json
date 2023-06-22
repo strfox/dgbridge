@@ -1,0 +1,59 @@
+{
+  "tests": {
+    "discordToSubprocess": [
+      {
+        "input": "hey bob",
+        "expect": "say <Mike> hey bob",
+        "userProps": "mike"
+      },
+      {
+        "input": "hello everyone I am trying to\nbreak the server with newlines",
+        "expect": "say <Mike> hello everyone I am trying to break the server with newlines",
+        "userProps": "mike"
+      }
+    ],
+    "subprocessToDiscord": [
+      {
+        "input": "[12:01:01] [Server thread/INFO] <FennecBytes> hello world!",
+        "expect": "**<FennecBytes>** hello world!"
+      },
+      {
+        "input": "[00:00:00] [Server thread/INFO] <Bob> very cool things happening <here>!",
+        "expect": "**<Bob>** very cool things happening <here>!"
+      },
+      {
+        "input": "[26Apr2023 06:29:51.141] [Server thread/INFO] <Bob> very cool things happening <here>!",
+        "expect": "**<Bob>** very cool things happening <here>!"
+      },
+      {
+        "input": "[26Apr2023 06:29:51.141] [Server thread/INFO] [net.minecraft.network.login.ServerLoginNetHandler/]: com.mojang.authlib.GameProfile@3d30fdae[id=<null>,name=Bob,properties={},legacy=false] (/111.11.111.111:59464) lost connection: Disconnected",
+        "expect": ":arrow_left: **Bob** lost connection."
+      },
+      {
+        "input": "[26Apr2023 05:52:38.452] [Server thread/INFO] [net.minecraft.server.dedicated.DedicatedServer/]: Bob left the game",
+        "expect": ":arrow_left: **Bob** disconnected."
+      },
+      {
+        "input": "[22:19:58] [Worker-Main-9/INFO]: Preparing spawn area: 10%",
+        "expect": null
+      },
+      {
+        "input": "[22:20:30] [Server thread/INFO]: bob[/127.0.0.1:54428] logged in with entity id 431 at (10.5, 74.0, -2.5)",
+        "expect": ":arrow_right: **bob** connected."
+      },
+      {
+        "input": "[22:20:30] [Server thread/INFO]: bob joined the game",
+        "expect": ""
+      }
+    ]
+  },
+  "userProps": {
+    "mike": {
+      "author": {
+        "username": "Mike",
+        "discriminator": "3782",
+        "accentColor": 4473856
+      }
+    }
+  }
+}

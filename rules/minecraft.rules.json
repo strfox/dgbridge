@@ -7,16 +7,20 @@
   ],
   "SubprocessToDiscord": [
     {
-      "Match": ".*\\[.*INFO]:? <(.+)> (.+)",
+      "Match": ".*\\[.*INFO](?: \\[.*])?:? <(.+)> (.+)",
       "Template": "**<${1}>** ${2}"
     },
     {
-      "Match": ".*\\[.*INFO]:? (.+)\\[.+] logged in with entity id.*",
-      "Template": ":arrow_left: **${1}** connected."
+      "Match": ".*\\[.*INFO](?: \\[.*])?:? (.+)\\[.+] logged in with entity id.*",
+      "Template": ":arrow_right: **${1}** connected."
     },
     {
-      "Match": ".*\\[.*INFO]:? (.+) lost connection.*",
-      "Template": ":arrow_right: **${1}** disconnected."
+      "Match": ".*\\[.*INFO](?: \\[.*])?:? ([aA0-zZ9_]+) left the game",
+      "Template": ":arrow_left: **${1}** disconnected."
+    },
+    {
+      "Match": ".*\\[.*INFO](?: \\[.*])?:? com\\.mojang\\.authlib\\.GameProfile@[0-9a-fA-F]+\\[.*name=([aA0-zZ9_]+).*] \\(/.+\\) lost connection\\b.*",
+      "Template": ":arrow_left: **${1}** lost connection."
     }
   ]
 }
